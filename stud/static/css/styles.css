@@ -7,7 +7,7 @@ html, body {
 }
 
 a {
-	color: white;
+	color: blueviolet;
 	text-decoration: none;
 }
 
@@ -21,7 +21,7 @@ a:hover {
 
 ul.mainmenu {
 	list-style: none;
-	background: #AAD67C;
+	background: #14233A;
 	height: 60px;
 	margin: 0;
 	padding: 0;
@@ -40,12 +40,12 @@ ul.mainmenu li.last {
 }
 
 ul.mainmenu li a {
-	color: #625343;
+	color:  white;
 	text-decoration: none;
 }
 
 ul.mainmenu li a:hover {
-	color: #000000;
+	color: #00ACAC;
 }
 
 div.content {

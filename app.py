@@ -12,6 +12,7 @@ from forms import LoginForm, RegisterForm
 from volunt.volunt import volunt
 from coord.coord import coord
 from admin.admin import admin
+from stud.stud import stud
 
 
 
@@ -32,6 +33,7 @@ login_manager.login_message_category = "success"
 app.register_blueprint(coord, url_prefix='/coord')
 app.register_blueprint(volunt, url_prefix='/volunt')
 app.register_blueprint(admin, url_prefix='/admin')
+app.register_blueprint(stud, url_prefix='/stud')
 
 
 @login_manager.user_loader
@@ -113,7 +115,7 @@ def login():
             rm = form.remember.data
             login_user(user_login, remember=rm)
             role = dbase.get_role(user['id'])
-            if (role == 'guest') or (role == 'stud'):
+            if role == 'guest':
                 return redirect(request.args.get('next') or url_for('profile'))
             return redirect(url_for(role+'.profile'))
         flash("Неверный логин или пароль", "error")
@@ -124,6 +126,11 @@ def login():
 @app.route('/profile')
 @login_required
 def profile():
+    print("usual profile()")
+    if current_user.is_authenticated:
+        role = dbase.get_role(current_user.get_id())
+        if role != 'guest':
+            return redirect(url_for(role+'.profile'))
     return render_template("profile.html", menu=dbase.get_guest_menu(),
                            title="Профиль", is_auth=current_user.is_authenticated)
 
