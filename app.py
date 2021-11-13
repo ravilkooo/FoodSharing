@@ -2,9 +2,9 @@ import os
 import sqlite3
 from datetime import datetime
 
-from flask_login import LoginManager, logout_user, login_required
+from flask_login import LoginManager, logout_user, login_required, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Flask, render_template, request, g, redirect, flash, url_for
+from flask import Flask, render_template, request, g, redirect, flash, url_for, make_response
 from flask_security import UserMixin, RoleMixin
 from FShDataBase import FShDataBase
 from UserLogin import UserLogin
@@ -76,28 +76,49 @@ def close_db(error):
 @app.route("/")
 def index():
     print(dbase.get_guest_menu())
-    return render_template("index.html", title="Главная", menu=dbase.get_guest_menu())
+    return render_template("index.html", title="Главная",
+                           menu=dbase.get_guest_menu(), is_auth=current_user.is_authenticated)
 
 
 @app.route("/register", methods=("POST", "GET"))
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('profile'))
     form = RegisterForm()
     if form.validate_on_submit():
         hpsw = generate_password_hash(form.psw.data)
-        res = dbase.add_user(form.name.data, form.email.data, hpsw)
+        res = dbase.add_user(form.name.data, form.surname.data, form.email.data, hpsw)
         if res:
             flash("Вы успешно зарегестрированы", "success")
             return redirect(url_for('login'))
         else:
             flash("Ошибка при добавлении в БД", "error")
     return render_template("register.html", title="Регистрация", menu=dbase.get_guest_menu(),
-                           form=form)
+                           form=form, is_auth=current_user.is_authenticated)
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    return render_template("login.html", menu=dbase.get_guest_menu(), title="Авторизация")
-# return render_template("login.html", menu=dbase.get_guest_menu(), title="Авторизация", form=form)
+    if current_user.is_authenticated:
+        return redirect(url_for('profile'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = dbase.get_user_by_email(form.email.data)
+        if user and check_password_hash(user['psw'], form.psw.data):
+            user_login = UserLogin().create(user)
+            rm = form.remember.data
+            login_user(user_login, remember=rm)
+            return redirect(request.args.get('next') or url_for('profile'))
+        flash("Неверный логин или пароль", "error")
+    return render_template("login.html", menu=dbase.get_guest_menu(),
+                           title="Авторизация", form=form, is_auth=current_user.is_authenticated)
+
+
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template("profile.html", menu=dbase.get_guest_menu(),
+                           title="Профиль", is_auth=current_user.is_authenticated)
 
 
 @app.route('/logout')
@@ -108,10 +129,34 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/profile')
+@app.route('/userava')
 @login_required
-def profile():
-    return render_template("profile.html", menu=dbase.get_guest_menu(), title="Профиль")
+def userava():
+    img = current_user.get_avatar(app)
+    if not img:
+        return ""
+    h = make_response(img)
+    h.headers['Content-Type'] = 'image/png'
+    return h
+
+
+@app.route('/upload', methods=['POST', 'GET'])
+@login_required
+def upload():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and current_user.verify_ext(file.filename):
+            try:
+                img = file.read()
+                res = dbase.update_user_avatar(img, current_user.get_id())
+                if not res:
+                    flash("Ошибка обновления аватара", "error")
+                flash("Аватар обновлен", "success")
+            except FileNotFoundError as e:
+                flash("Ошибка чтения файла", "error")
+        else:
+            flash("Ошибка обновления аватара", "error")
+    return redirect(url_for('profile'))
 
 
 @app.errorhandler(404)

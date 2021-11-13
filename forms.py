@@ -12,7 +12,9 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    name = StringField("Имя: ", validators=[Length(min=4, max=100, message="Имя должно быть от 4 до 100 символов")])
+    name = StringField("Имя: ", validators=[Length(min=2, max=100, message="Имя должно быть от 2 до 100 символов")])
+    surname = StringField("Фамилия: ", validators=[Length(min=2, max=100, message="Фамилия должна быть от 2 до 100 "
+                                                                                  "символов")])
     email = StringField("Email: ", validators=[Email("Некорректный email")])
     psw = PasswordField("Пароль: ", validators=[DataRequired(), Length(min=4, max=100, message="Пароль должен быть от "
                                                                                                "4 до 100 символов")])

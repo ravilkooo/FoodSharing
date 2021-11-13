@@ -14,9 +14,15 @@
 {%endblock%}
 {% if menu -%}
     <ul class="guestmenu">
-        {%for m in menu%}
+        {%if is_auth%}
+        {%for m in menu if m.title not in ['Авторизация', 'Регистрация'] %}
         <li><a href="{{m.url}}">{{m.title}}</a></li>
         {% endfor %}
+        {%else%}
+        {%for m in menu if m.title not in ['Профиль'] %}
+        <li><a href="{{m.url}}">{{m.title}}</a></li>
+        {% endfor %}
+        {%endif%}
     </ul>
     <div class="clear"></div>
 {%endif%}

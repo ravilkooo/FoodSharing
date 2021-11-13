@@ -26,5 +26,20 @@ class UserLogin(UserMixin):
     def get_name(self):
         return str(self.__user['name']) if self.__user else "No name"
 
+    def get_surname(self):
+        return str(self.__user['surname']) if self.__user else "No surname"
+
     def get_email(self):
         return str(self.__user['email']) if self.__user else "No email"
+
+    def get_avatar(self, app):
+        img = None
+        if not self.__user['avatar']:
+            try:
+                with app.open_resource(app.root_path + url_for('static', filename='images/default.png'), "rb") as f:
+                    img = f.read()
+            except FileNotFoundError as e:
+                print('Не найдён аватар по умолчанию: '+str(e))
+        else:
+            img = self.__user['avatar']
+        return img

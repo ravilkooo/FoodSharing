@@ -21,7 +21,7 @@ class FShDataBase:
             print("Ошибка чтения из БД " + str(e))
         return []
 
-    def add_user(self, name, email, hash_password):
+    def add_user(self, name, surname, email, hash_password):
         try:
             self.__cur.execute(f"SELECT COUNT() as `count` FROM users WHERE email LIKE '{email}'")
             res = self.__cur.fetchone()
@@ -30,7 +30,7 @@ class FShDataBase:
                 return False
             else:
                 tm = math.floor(time.time())
-                self.__cur.execute("INSERT INTO users VALUES(NULL, ?, ?, ?, NULL, ?)", (name, email, hash_password, tm))
+                self.__cur.execute("INSERT INTO users VALUES(NULL, ?, ?, '', ?, ?, NULL)", (name, surname, email, hash_password))
                 self.__db.commit()
         except sqlite3.Error as e:
             print("add_user(): Ошибка добавления в БД " + str(e))
@@ -60,4 +60,20 @@ class FShDataBase:
         except sqlite3.Error as e:
             print("get_user_by_mail(): Ощибка чтения из БД: "+str(e))
         return False
+
+    # def get_role(self, user_id):
+    #     try:
+    #         self.__cur.execute(f"")
+
+    def update_user_avatar(self, avatar, user_id):
+        if not avatar:
+            return False
+        try:
+            binary = sqlite3.Binary(avatar)
+            self.__cur.execute("UPDATE users SET avatar = ? WHERE id == ?", (binary, user_id))
+            self.__db.commit()
+        except sqlite3.Error as e:
+            print("Ошибка обновления аватара в БД: "+str(e))
+            return False
+        return True
 
