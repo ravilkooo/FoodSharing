@@ -8,7 +8,7 @@ from forms import LoginForm
 volunt = Blueprint("volunt", __name__, template_folder="templates", static_folder="static")
 
 menu = [{'url': '.profile', 'title': 'Профиль'},
-        {'url': '.schedule', 'title': 'Расписание'},
+        # {'url': '.schedule', 'title': 'Расписание'},
         {'url': '.logout', 'title': 'Выйти'}]
 
 
@@ -59,4 +59,11 @@ def profile():
 def logout():
     logout_user()
     flash("Вы вышли из аккаунта", "success")
-    return redirect(url_for('/login'))
+    return redirect(url_for('login'))
+
+
+@volunt.route('/schedule')
+@login_required
+def schedule():
+    # dataSeries в виде каледнаря
+    return 0
