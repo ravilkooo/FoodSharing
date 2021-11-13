@@ -26,23 +26,23 @@ def teardown_request(req):
     return req
 
 
-def login_admin():
-    session['admin_logged'] = 1
-
-
-def is_logged():
-    return True if session.get("admin_logged") else False
-
-
-def logout_admin():
-    session.pop('admin_logged', None)
-
-
-@admin.route('/')
-def index():
-    if not is_logged():
-        return redirect(url_for(".login"))
-    return render_template("admin/index.html", menu=menu, title="Кабинет волонтёра")
+# def login_admin():
+#     session['admin_logged'] = 1
+#
+#
+# def is_logged():
+#     return True if session.get("admin_logged") else False
+#
+#
+# def logout_admin():
+#     session.pop('admin_logged', None)
+#
+#
+# @admin.route('/')
+# def index():
+#     if not is_logged():
+#         return redirect(url_for(".login"))
+#     return render_template("admin/index.html", menu=menu, title="Кабинет админа")
 
 
 @admin.route('/profile')

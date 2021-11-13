@@ -19,33 +19,33 @@ a:hover {
 	clear: both;
 }
 
-ul.guestmenu {
+ul.mainmenu {
 	list-style: none;
-	background: brown;
+	background: #14233A;
 	height: 60px;
 	margin: 0;
 	padding: 0;
-	color:  burlywood;
+	color:  white;
 	font-size: 20px;
 	overflow: hidden;
 }
 
-ul.guestmenu li {
+ul.mainmenu li {
 	float:  left;
 	margin: 18px 40px 0px 50px;
 }
 
-ul.guestmenu li.last {
+ul.mainmenu li.last {
 	float: right;
 }
 
-ul.guestmenu li a {
-	color: burlywood;
+ul.mainmenu li a {
+	color:  white;
 	text-decoration: none;
 }
 
-ul.guestmenu li a:hover {
-	color: white;
+ul.mainmenu li a:hover {
+	color: #00ACAC;
 }
 
 div.content {
