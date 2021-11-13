@@ -32,6 +32,9 @@ class UserLogin(UserMixin):
     def get_email(self):
         return str(self.__user['email']) if self.__user else "No email"
 
+    def get_role_id(self):
+        return str(self.__user['role_id']) if self.__user else "No role"
+
     def get_avatar(self, app):
         img = None
         if not self.__user['avatar']:

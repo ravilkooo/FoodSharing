@@ -14,6 +14,10 @@ CREATE TABLE IF NOT EXISTS users(
 );
 CREATE TABLE IF NOT EXISTS users_roles(
     user_id integer PRIMARY KEY,
-    role integer NOT NULL
+    role_id integer NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS roles(
+    id integer PRIMARY KEY NOT NULL,
+    role text NOT NULL
 );
 

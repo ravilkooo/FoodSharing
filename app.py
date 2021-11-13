@@ -10,6 +10,10 @@ from FShDataBase import FShDataBase
 from UserLogin import UserLogin
 from forms import LoginForm, RegisterForm
 from volunt.volunt import volunt
+from coord.coord import coord
+from admin.admin import admin
+
+
 
 DATABASE = '/tmp/site.db'
 DEBUG = True
@@ -25,10 +29,9 @@ login_manager.login_view = 'login'
 login_manager.login_message = "Необходима авторизация"
 login_manager.login_message_category = "success"
 
-# app.register_blueprint(admin, url_prefix='/admin')
-# app.register_blueprint(coord, url_prefix='/coord')
+app.register_blueprint(coord, url_prefix='/coord')
 app.register_blueprint(volunt, url_prefix='/volunt')
-# app.register_blueprint(stud, url_prefix='/stud')
+app.register_blueprint(admin, url_prefix='/admin')
 
 
 @login_manager.user_loader
@@ -109,7 +112,10 @@ def login():
             user_login = UserLogin().create(user)
             rm = form.remember.data
             login_user(user_login, remember=rm)
-            return redirect(request.args.get('next') or url_for('profile'))
+            role = dbase.get_role(user['id'])
+            if (role == 'guest') or (role == 'stud'):
+                return redirect(request.args.get('next') or url_for('profile'))
+            return redirect(url_for(role+'.profile'))
         flash("Неверный логин или пароль", "error")
     return render_template("login.html", menu=dbase.get_guest_menu(),
                            title="Авторизация", form=form, is_auth=current_user.is_authenticated)

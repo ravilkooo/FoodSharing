@@ -61,9 +61,22 @@ class FShDataBase:
             print("get_user_by_mail(): Ощибка чтения из БД: "+str(e))
         return False
 
-    # def get_role(self, user_id):
-    #     try:
-    #         self.__cur.execute(f"")
+    def get_role(self, user_id):
+        try:
+            self.__cur.execute(f"SELECT role_id FROM users_roles WHERE user_id == {user_id} LIMIT 1")
+            role_id = self.__cur.fetchone()
+            if not role_id:
+                print("get_role(): Пользователь не найден")
+                return False
+            self.__cur.execute(f"SELECT role FROM roles WHERE id == {role_id['role_id']} LIMIT 1")
+            res = self.__cur.fetchone()
+            if not res:
+                print("get_role(): Роль не найдена")
+                return False
+            return res['role']
+        except sqlite3.Error as e:
+            print("get_role(): Ошибка чтения из БД: "+str(e))
+        return False
 
     def update_user_avatar(self, avatar, user_id):
         if not avatar:
