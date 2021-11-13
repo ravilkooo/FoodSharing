@@ -9,6 +9,7 @@ from flask_security import UserMixin, RoleMixin
 from FShDataBase import FShDataBase
 from UserLogin import UserLogin
 from forms import LoginForm, RegisterForm
+from volunt.volunt import volunt
 
 DATABASE = '/tmp/site.db'
 DEBUG = True
@@ -26,7 +27,7 @@ login_manager.login_message_category = "success"
 
 # app.register_blueprint(admin, url_prefix='/admin')
 # app.register_blueprint(coord, url_prefix='/coord')
-# app.register_blueprint(volunt, url_prefix='/volunt')
+app.register_blueprint(volunt, url_prefix='/volunt')
 # app.register_blueprint(stud, url_prefix='/stud')
 
 
