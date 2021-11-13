@@ -1,0 +1,63 @@
+import math
+import sqlite3
+import time
+
+from flask import url_for
+
+
+class FShDataBase:
+    def __init__(self, db):
+        self.__db = db
+        self.__cur = db.cursor()
+
+    def get_guest_menu(self):
+        sql = '''SELECT * FROM guestmenu'''
+        try:
+            self.__cur.execute(sql)
+            res = self.__cur.fetchall()
+            if res:
+                return res
+        except sqlite3.Error as e:
+            print("Ошибка чтения из БД " + str(e))
+        return []
+
+    def add_user(self, name, email, hash_password):
+        try:
+            self.__cur.execute(f"SELECT COUNT() as `count` FROM users WHERE email LIKE '{email}'")
+            res = self.__cur.fetchone()
+            if res['count'] > 0:
+                print('add_user(): Пользователь с таким email уже существует')
+                return False
+            else:
+                tm = math.floor(time.time())
+                self.__cur.execute("INSERT INTO users VALUES(NULL, ?, ?, ?, NULL, ?)", (name, email, hash_password, tm))
+                self.__db.commit()
+        except sqlite3.Error as e:
+            print("add_user(): Ошибка добавления в БД " + str(e))
+            return False
+        return True
+
+    def get_user(self, user_id):
+        try:
+            self.__cur.execute(f"SELECT * FROM users WHERE id ==  {user_id} LIMIT 1")
+            res = self.__cur.fetchone()
+            if not res:
+                print("get_user(): Пользователь не найден")
+                return False
+            return res
+        except sqlite3.Error as e:
+            print("get_user(): Ошибка чтения из БД " + str(e))
+        return False
+
+    def get_user_by_email(self, email):
+        try:
+            self.__cur.execute(f"SELECT * FROM users WHERE email LIKE  '{email}' LIMIT 1")
+            res = self.__cur.fetchone()
+            if not res:
+                print("get_user_by_mail(): Пользователь не найден")
+                return False
+            return res
+        except sqlite3.Error as e:
+            print("get_user_by_mail(): Ощибка чтения из БД: "+str(e))
+        return False
+
