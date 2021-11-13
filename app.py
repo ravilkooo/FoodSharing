@@ -8,6 +8,7 @@ from flask import Flask, render_template, request, g, redirect, flash, url_for
 from flask_security import UserMixin, RoleMixin
 from FShDataBase import FShDataBase
 from UserLogin import UserLogin
+from forms import LoginForm, RegisterForm
 
 DATABASE = '/tmp/site.db'
 DEBUG = True
@@ -74,12 +75,23 @@ def close_db(error):
 @app.route("/index")
 @app.route("/")
 def index():
+    print(dbase.get_guest_menu())
     return render_template("index.html", title="Главная", menu=dbase.get_guest_menu())
 
 
 @app.route("/register", methods=("POST", "GET"))
 def register():
-    return render_template("register.html", title="Регистрация", menu=dbase.get_guest_menu())
+    form = RegisterForm()
+    if form.validate_on_submit():
+        hpsw = generate_password_hash(form.psw.data)
+        res = dbase.add_user(form.name.data, form.email.data, hpsw)
+        if res:
+            flash("Вы успешно зарегестрированы", "success")
+            return redirect(url_for('login'))
+        else:
+            flash("Ошибка при добавлении в БД", "error")
+    return render_template("register.html", title="Регистрация", menu=dbase.get_guest_menu(),
+                           form=form)
 
 
 @app.route('/login', methods=['POST', 'GET'])

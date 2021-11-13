@@ -19,7 +19,7 @@ a:hover {
 	clear: both;
 }
 
-ul.mainmenu {
+ul.guestmenu {
 	list-style: none;
 	background: brown;
 	height: 60px;
@@ -30,21 +30,21 @@ ul.mainmenu {
 	overflow: hidden;
 }
 
-ul.mainmenu li {
+ul.guestmenu li {
 	float:  left;
 	margin: 18px 40px 0px 50px;
 }
 
-ul.mainmenu li.last {
+ul.guestmenu li.last {
 	float: right;
 }
 
-ul.mainmenu li a {
+ul.guestmenu li a {
 	color: burlywood;
 	text-decoration: none;
 }
 
-ul.mainmenu li a:hover {
+ul.guestmenu li a:hover {
 	color: white;
 }
 
